@@ -1,6 +1,6 @@
 ---
 name: "rebuild-app"
-pack: "st2_mydemo_pack"
+pack: "mydemo_pack"
 description: "Rebuild App Container"
 enabled: true
 runner_type: "orquesta"

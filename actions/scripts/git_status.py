@@ -7,12 +7,11 @@ from st2actions.runners.pythonrunner import Action
 from common_mydemo import Common
 
 class GitStatusAction(Action):
-    """Action class for st2."""
+    """Action class for st2"""
 
     def __init__(self, command, branch, expected):
         self.output = []
         self.result = {}
-        self.bool = False
         self.command = command
         self.branch = branch
         self.expected = expected
@@ -61,27 +60,41 @@ class GitStatusAction(Action):
 
         return success, stdout
     
-    def write_result(self, stdout, stderr):
+    def write_result(self, bool, stdout, stderr):
         result.update({
-            "command": self.command
-            "branch":
-            "expected":
-            "bool":
+            "command": self.command,
+            "branch": self.branch,
+            "expected": self.expected,
+            "bool": self.bool
             "stdout":
             "stderr":
 
         })
-
-    
-
     
 
     def run(self, command, branch, expected):
-        
+        """ Entrypoint for st2 """
+
+        bool = False
+        stdout = []
+        stderr = []
+
         try:
             self.bool, stdout, stderr = self.common.execute_command(self.command)
-            self.bool, stdout = self.check_stdout(stdout)
-            self.output = self.write_result(stdout, stderr)
+            bool, stdout = self.check_stdout(stdout)
+            self.output = self.write_result(bool, stdout, stderr)
+        except:
+            pass
+
+        finally:
+            self.result = self.write_result(bool, stdout, stderr)
+        
+        self.output.append(self.result)
+
+        return self.output 
+
+
+
 
 
 
