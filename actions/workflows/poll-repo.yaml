@@ -23,7 +23,7 @@ tasks:
       do: git_status_before_merged
   
   git_status_before_merged:
-    action: mydemo.git_status
+    action: mydemo_pack.git_status
     input:
       working_dir: <% ctx().working_dir %>
       branch: <% ctx().branch %>
@@ -70,7 +70,7 @@ tasks:
               <% result() %>
   
   git_status_after_merged:
-    action: mydemo.git_status
+    action: mydemo_pack.git_status
     input:
       working_dir: <% ctx().working_dir %>
       branch: <% ctx().branch %>

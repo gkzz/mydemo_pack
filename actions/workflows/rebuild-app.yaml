@@ -23,7 +23,7 @@ tasks:
       do: rebuild_app
 
   rebuild_app:
-    action: mydemo.rebuild_app
+    action: mydemo_pack.rebuild_app
     input:
       working_dir: <% ctx().working_dir %>
       ptn: <% ctx().ptn %>

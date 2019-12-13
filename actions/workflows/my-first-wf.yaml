@@ -19,7 +19,7 @@ tasks:
       do: main
   
   main:
-    action: mydemo.get_distro
+    action: mydemo_pack.get_distro
     input:
       distro_name: <% ctx().distro_name %>
       timeout:  <% ctx().timeout %>
