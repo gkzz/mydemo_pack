@@ -1,0 +1,13 @@
+---
+ref: mydemo_pack
+name: mydemo_pack
+description: st2 mydemo pack
+keyworkds:
+  - mydemo_pack
+version: 0.0.1
+python_versions:
+  - "2"
+author: Gakuji Tamaki
+contributors:
+  - Gakuji Tamaki @gkzvoice
+email: info@stackstorm.com

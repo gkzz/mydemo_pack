@@ -1,0 +1,16 @@
+---
+name: "playbook-demo"
+pack: "mydemo_pack"
+description: "Playbook Demo"
+runner_type: "orquesta"
+entry_point: "workflows/playbook-demo.yaml"
+enabled: true
+parameters:
+  playbook:
+    type: "string"
+    required: true
+    default: "/opt/stackstorm/packs/ansible/playbook/ping.yaml"
+  inventory_file:
+    type: "string"
+    required: true
+    default: "/opt/stackstorm/packs/ansible/inventory/hosts"

@@ -1,0 +1,20 @@
+---
+name: "rebuild-app"
+pack: "st2_mydemo_pack"
+description: "Rebuild App Container"
+enabled: true
+runner_type: "orquesta"
+entry_point: "workflows/rebuild-app.yaml"
+parameters:
+  working_dir:
+    type: "string"
+    required: true
+    default: "/usr/src/app/flask-docker"
+  ptn:
+    type: "string"
+    required: true
+    default: "flask-docker_flask|flask-docker_nginx"
+  timeout:
+    type: "integer"
+    required: true
+    default: 300

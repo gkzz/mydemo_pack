@@ -1,0 +1,16 @@
+# general
+.
+..
+
+# env
+.env
+*.env
+
+# vscode
+.vscode
+
+# st2
+packs
+*.pyc
+conf
+

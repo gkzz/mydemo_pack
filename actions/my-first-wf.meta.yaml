@@ -1,0 +1,16 @@
+---
+name: "my-first-wf"
+pack: "mydemo_pack"
+description: "return code depends on the result"
+runner_type: "orquesta"
+entry_point: "workflows/my-first-wf.yaml"
+enabled: true
+parameters:
+  distro_name:
+    type: "string"
+    required: true
+    default: "centos"
+  timeout:
+    type: "integer"
+    required: true
+    default: 300

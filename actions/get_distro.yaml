@@ -1,0 +1,14 @@
+---
+name: "get_distro"
+pack: "mydemo_pack"
+description: "get distro"
+enabled: true
+runner_type: "local-shell-script"
+entry_point: "scripts/get_distro.sh"
+parameters:
+  distro_name:
+    type: "string"
+    required: true
+  timeout:
+    type: "integer"
+    required: true
