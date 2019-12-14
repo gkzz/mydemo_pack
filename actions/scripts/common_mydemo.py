@@ -6,7 +6,7 @@ import subprocess
 
 
 class Common:
-    """ Common for Mydemo """
+    """ Common for mydemo """
     
     def __init__(self):
         pass

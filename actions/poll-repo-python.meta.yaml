@@ -1,0 +1,29 @@
+---
+name: "poll-repo-python"
+pack: "mydemo_pack"
+description: "poll repo with python"
+runner_type: "orquesta"
+entry_point: "workflows/poll-repo-python.yaml"
+enabled: true
+parameters:
+  working_dir:
+    type: "string"
+    required: true
+    default: "/usr/src/app/flask-docker"
+  branch:
+    type: "string"
+    required: true
+    default: "devel-views"
+  expected:
+    type: "string"
+    required: true
+    default: "up_to_date"
+  ptn:
+    type: "string"
+    required: true
+    default: "flask-docker_flask|flask-docker_nginx"
+  timeout:
+    type: "integer"
+    required: true
+    default: 300
+

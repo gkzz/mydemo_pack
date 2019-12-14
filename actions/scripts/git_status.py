@@ -9,10 +9,10 @@ from common_mydemo import Common
 class GitStatusAction(Action):
     """Action class for st2"""
 
-    def __init__(self, command, branch, expected):
+    def __init__(self, working_dir, branch, expected):
         self.output = []
         self.result = {}
-        self.command = command
+        self.command = "cd {dir} && sudo git status".format(dir=working_dir)
         self.branch = branch
         self.expected = expected
         self.redict = {
@@ -41,6 +41,7 @@ class GitStatusAction(Action):
             ptn = self.redict['not_up_to_date']
         else:
             pass
+
         return ptn
     
 
@@ -60,19 +61,21 @@ class GitStatusAction(Action):
 
         return success, stdout
     
+
     def write_result(self, bool, stdout, stderr):
         result.update({
             "command": self.command,
             "branch": self.branch,
             "expected": self.expected,
-            "bool": self.bool
-            "stdout":
-            "stderr":
-
+            "bool": self.bool,
+            "stdout": stdout,
+            "stderr": stderr,
         })
+
+        return result
     
 
-    def run(self, command, branch, expected):
+    def run(self, working_dir, branch, expected):
         """ Entrypoint for st2 """
 
         bool = False

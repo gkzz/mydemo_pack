@@ -1,0 +1,21 @@
+---
+name: "git_status_python"
+pack: "mydemo_pack"
+description: "git status with python"
+enabled: true
+runner_type: "python-script"
+entry_point: "scripts/git_status.py"
+parameters:
+  working_dir:
+    type: "string"
+    required: true
+    position: 0
+  branch:
+    type: "string"
+    required: true
+    position: 1
+  expected:
+    type: "string"
+    required: true
+    position: 2
+
