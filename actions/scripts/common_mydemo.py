@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import subprocess
+from subprocess import Popen, PIPE
 
 
 class Common:

@@ -19,7 +19,7 @@ tasks:
     next:
     - publish:
         - failed: False
-        - action_name: 'poll_repo'
+        - action_name: 'poll-repo-python'
         - merged: False
       do: git_status_before_merged
   

@@ -27,7 +27,7 @@ class GitStatusAction(Action):
         for r in [
             "command", "branch", "expected", "bool", "stdout", "stderr"
         ]:
-        self.result[r] = None 
+            self.result[r] = None 
 
         self.common = Common()
 
