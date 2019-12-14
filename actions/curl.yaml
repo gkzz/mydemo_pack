@@ -1,0 +1,7 @@
+---
+name: "curl"
+pack: "mydemo_pack"
+description: "check app by curl"
+enabled: true
+runner_type: "local-shell-script"
+entry_point: "scripts/curl.sh"
