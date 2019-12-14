@@ -9,9 +9,10 @@ from common_mydemo import Common
 class GitStatusAction(Action):
     """Action class for st2"""
 
-    def __init__(self, working_dir, branch, expected):
+    def __init__(self, config, working_dir, branch, expected):
         self.output = []
         self.result = {}
+        self.config = config
         self.command = "cd {dir} && sudo git status".format(dir=working_dir)
         self.branch = branch
         self.expected = expected
