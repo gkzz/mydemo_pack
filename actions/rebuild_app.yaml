@@ -1,10 +1,10 @@
 ---
-name: "rebuild-app"
+name: "rebuild_app"
 pack: "mydemo_pack"
 description: "Rebuild App Container"
 enabled: true
 runner_type: "local-shell-script"
-entry_point: "scripts/get_distro.sh"
+entry_point: "scripts/rebuild_app.sh"
 parameters:
   working_dir:
     type: "string"
