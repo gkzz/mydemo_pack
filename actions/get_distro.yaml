@@ -9,6 +9,4 @@ parameters:
   distro_name:
     type: "string"
     required: true
-  timeout:
-    type: "integer"
-    required: true
+    postion: 0

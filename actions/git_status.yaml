@@ -9,13 +9,17 @@ parameters:
   working_dir:
     type: "string"
     required: true
+    position: 0
   branch:
     type: "string"
     required: true
+    position: 1
   expected:
     type: "string"
     required: true
+    position: 2
   timeout:
     type: "integer"
     required: true
+    position: 3
 
