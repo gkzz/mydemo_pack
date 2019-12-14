@@ -10,7 +10,6 @@ parameters:
     type: "string"
     required: true
     default: "centos"
-  timeout:
-    type: "integer"
-    required: true
-    default: 300
+    postion: 0
+    
+

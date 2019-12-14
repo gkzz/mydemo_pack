@@ -18,8 +18,4 @@ parameters:
     type: "string"
     required: true
     position: 2
-  timeout:
-    type: "integer"
-    required: true
-    position: 3
 
