@@ -9,7 +9,7 @@ parameters:
   working_dir:
     type: "string"
     required: true
-    ptn: 0
+    position: 0
   ptn:
     type: "string"
     required: true
