@@ -103,10 +103,40 @@ tasks:
           - failed: False
           - action_result: <% result() %>
       - when: <% failed() %>
+        do: check_failed
+        publish:
+          - action_result: <% result() %>
+          - rc: <% result().return_code %>
+
+  check_failed:
+    action: core.noop
+    next:
+    - when: <% ctx().rc = 201 %>
+      do: rebuild_app_cmd
+    - when: <% ctx().rc != 201 %>
+      do: post_msg
+      publish:
+      - failed: True 
+
+  rebuild_app_cmd:
+    action: core.local
+    input:
+      cmd: sudo docker-compose up -d --build
+      cwd: <% ctx().working_dir %>
+      timeout: 600
+    next:
+      - when: <% succeeded() %>
         do: post_msg
         publish:
-          - failed: True
-          - action_result: <% result() %>
+          - action_result: |-
+              [result]
+              <% result() %>
+      - when: <% failed() %>
+        do: post_msg
+        publish:
+          - action_result: |-
+              [result]
+              <% result() %>
   
   post_msg:
     action: slack.post_message
