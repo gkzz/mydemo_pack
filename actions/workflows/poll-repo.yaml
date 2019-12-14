@@ -6,6 +6,7 @@ input:
   - working_dir
   - branch
   - expected
+  - ptn
   - timeout
 
 output:
@@ -76,7 +77,7 @@ tasks:
       timeout: <% ctx().timeout %>
     next:
       - when: <% succeeded() %>
-        do: post_msg
+        do: rebuild_app
         publish:
           - action_result: |-
               [result]
@@ -88,7 +89,24 @@ tasks:
           - action_result: |-
               [result]
               <% result() %>
-
+  
+  rebuild_app:
+    action: mydemo_pack.rebuild_app
+    input:
+      working_dir: <% ctx().working_dir %>
+      ptn: <% ctx().ptn %>
+      timeout: <% ctx().timeout %>
+    next:
+      - when: <% succeeded() %>
+        do: post_msg
+        publish:
+          - failed: False
+          - action_result: <% result() %>
+      - when: <% failed() %>
+        do: post_msg
+        publish:
+          - failed: True
+          - action_result: <% result() %>
   
   post_msg:
     action: slack.post_message

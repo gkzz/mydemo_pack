@@ -1,12 +1,18 @@
 ---
-name: "get_distro"
+name: "rebuild-app"
 pack: "mydemo_pack"
-description: "get distro"
+description: "Rebuild App Container"
 enabled: true
 runner_type: "local-shell-script"
 entry_point: "scripts/get_distro.sh"
 parameters:
-  distro_name:
+  working_dir:
     type: "string"
     required: true
-    position: 0
+    ptn: 0
+  ptn:
+    type: "string"
+    required: true
+    position: 1
+
+
