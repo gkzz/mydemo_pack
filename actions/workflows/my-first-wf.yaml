@@ -27,7 +27,8 @@ tasks:
       - when: <% succeeded() %>
         do: post_msg
         publish:
-          - msg: <% result() %>
+          - failed: False
+          - msg: "result: <% result() %>"
       - when: <% failed() and not ctx().failed and (ctx().distro_name = 'centos') %>
         do: main
         publish:
