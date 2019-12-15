@@ -1,20 +1,25 @@
 "succeeded":
-  "stdout":
-    "up_to_date":
+  "up_to_date":
+    "stdout":
       - "'On branch devel-views'"
       - "Your branch is up-to-date with 'origin/devel-views'."
       - "''"
       - "'nothing to commit, working directory clean'"
-    "not_up_to_date":
+    "stderr":
+      - ""
+  "not_up_to_date":
+    "stdout":
       - "hoge"
+    "stderr":
+      - ""
 "failed":
-  "stdout":
-    "up_to_date":
+  "up_to_date":
+    "stdout":
       - ""
-    "not_up_to_date":
-      - "hoge"
-  "stderr":
-    "up_to_date":
+    "stderr":
       - ""
-    "not_up_to_date":
+  "not_up_to_date":
+    "stdout":
+      - ""
+    "stderr":
       - "hoge"

@@ -34,26 +34,21 @@ tasks:
       - when: <% succeeded() and result().result.bool %>
         do: post_msg
         publish:
-          - action_result: |-
-              [result]
-              <% result() %>
-          - command: <% result().result.command %>
-          - expected: <% result().result.expected %>
-          - stdout: <% result().result.stdout %>
-          - stderr: <% result().result.stderr %>
+          - bool: "[bool] <% result().result.bool %>"
+          - command: "[commnad] <% result().result.command %>"
+          - expected: " [expected] <% result().result.expected %>"
+          - stdout: "[stdout] <% result().result.stdout %>"
+          - stderr: "[stderr] <% result().result.stderr %>"
 
       - when: <% failed() %>
         do: post_msg
         publish:
-          - action_result: |-
-              [result]
-              <% result() %>
-              [command]
-              <% ctx().commnad %>
-              [stdout]
-              <% ctx().stdout %>
-              [stderr]
-              <% ctx().stderr %>
+          - bool: "[bool] <% result().result.bool %>"
+          - command: "[commnad] <% result().result.command %>"
+          - expected: " [expected] <% result().result.expected %>"
+          - stdout: "[stdout] <% result().result.stdout %>"
+          - stderr: "[stderr] <% result().result.stderr %>"
+
   
   post_msg:
     action: slack.post_message
@@ -64,7 +59,11 @@ tasks:
         [failed]
         <% ctx().failed %>
         [action_result]
-        <% ctx().action_result %>
+        <% ctx().bool %>
+        <% ctx().commnad %>
+        <% ctx().expected %>
+        <% ctx().stdout %>
+        <% ctx().stderr %>
 
     next:
       - when: <% succeeded() or failed() %>
