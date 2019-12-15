@@ -22,10 +22,39 @@ class TestGitStatusAction(BaseActionTestCase):
     action_cls = GitStatusAction
 
     def test00_no_mock_st2(self):
-    #    input = yaml.load(self.get_fixture_content(input_file))
-    #    input.update({
-    #        "expected_hour": 20,
-    #    })
-#
-    #    action = self.get_action_instance()
-    #    results = action.run(**input)
+        input = yaml.load(self.get_fixture_content(input_file))
+
+        action = self.get_action_instance()
+        output = action.run(**input)
+        print('output: {output}'.format(output=output))
+
+        self.assertEquals(len(output), 1)
+        result = output[0]
+        self.assertEqual(result["bool"], True)
+    
+    @patch("common_mydemo.Common.execute_command")
+    def test00_mock_st2(self, execute):
+        input = yaml.load(self.get_fixture_content(input_file))
+        #input.update({
+        #    "key": value,
+        #})
+
+        def _execute_command():
+            bool = True
+            stdout = ["Your branch is up-to-date with 'origin/devel-views"]
+            stderr = [""]
+
+            return boolm stdout, stderr
+
+        execute.side_effect = _execute_command
+
+        action = self.get_action_instance()
+        results = action.run(**input)
+
+        print('results: {}'.format(results))
+
+        self.assertEquals(len(output), 1)
+        result = output[0]
+        self.assertEqual(result["bool"], True)
+
+

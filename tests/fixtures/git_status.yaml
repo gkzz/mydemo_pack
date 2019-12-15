@@ -1,7 +1,3 @@
-"up_to_date":
-  - "'On branch devel-views'"
-  - "Your branch is up-to-date with 'origin/devel-views'."
-  - "''"
-  - "'nothing to commit, working directory clean'"
-"not_up_to_date":
-  - "hoge"
+"working_dir": "/usr/src/app/flask-docker"
+"branch": "devel-views"
+"expected": "up_to_date"

@@ -86,8 +86,11 @@ class GitStatusAction(Action):
         try:
             command = self.set_command(working_dir)
             bool, stdout, stderr = self.common.execute_command(command)
-            bool, stdout = self.check_stdout(branch, expected, stdout)
-            self.result = self.write_result(command, branch, expected, bool, stdout, stderr)
+            if not bool:
+                pass
+            else:
+                bool, stdout = self.check_stdout(branch, expected, stdout)
+                self.result = self.write_result(command, branch, expected, bool, stdout, stderr)
         except:
             pass
 
