@@ -21,13 +21,9 @@ if [ -d "$working_dir" ]; then
   
   output=$(echo ${output:="unknown"})
 
-  if [ "$output" = "unknown" ]; then
-    exit 102
-  elif [ "$output" = "$branch" ]; then
+  if [ "$output" = "$branch" ]; then
     exit 0
-  else
-    exit 103
   fi
 fi
 
-exit 202
+
