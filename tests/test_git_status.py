@@ -30,11 +30,10 @@ class TestGitStatusAction(BaseActionTestCase):
         )
 
         action = self.get_action_instance()
-        output = action.run(**input)
-        print('output: {output}'.format(output=output))
+        result = action.run(**input)
+        print('result: {r}'.format(r=result))
 
-        self.assertEquals(len(output), 1)
-        result = output[0]
+        self.assertEquals(len(reuslt), 6)
         self.assertEqual(result["bool"], True)
     
     @patch("common_mydemo.Common.execute_command")
@@ -57,12 +56,10 @@ class TestGitStatusAction(BaseActionTestCase):
         execute.side_effect = _execute_command
 
         action = self.get_action_instance()
-        output = action.run(**input)
+        result = action.run(**input)
+        print('result: {r}'.format(r=result))
 
-        print('output: {}'.format(output))
-
-        self.assertEquals(len(output), 1)
-        result = output[0]
+        self.assertEquals(len(reuslt), 6)
         self.assertEqual(result["bool"], True)
 
 

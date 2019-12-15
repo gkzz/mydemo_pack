@@ -85,7 +85,6 @@ class GitStatusAction(Action):
     def run(self, working_dir, branch, expected):
         """ Entrypoint for st2 """
 
-        output = []
         bool = False
         stdout = ''
         stderr = ''
@@ -104,6 +103,4 @@ class GitStatusAction(Action):
         finally:
             self.result = self.write_result(command, branch, expected, bool, stdout, stderr)
         
-        output.append(self.result)
-
-        return output
+        return self.result
