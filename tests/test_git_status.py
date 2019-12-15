@@ -5,21 +5,25 @@ import yaml
 import os
 import sys
 import re
-sys.path.append('/opt/stackstorm/packs/mydemo_pack/actions/scripts')
+
+BASE_DIR = '/opt/stackstorm/packs/mydemo_pack'
+sys.path.append(BASE_DIR)
+sys.path.append(BASE_DIR + '/actions/scripts')
 sys.path.append('/opt/stackstorm/virtualenvs/mydemo_pack/lib/python2.7/site-packages')
 sys.path.append('/opt/stackstorm/st2/lib/python2.7/site-packages')
 
 
-BASE_DIR = "/opt/stackstorm/packs/mydemo_pack"
-sys.path.append(BASE_DIR)
+def set_response(filename):
+    return yaml.load(filename, Loader=yaml.FullLoader) 
 
-input_file = "git_status.yaml"
+
 
 from git_status import GitStatusAction
 
 class TestGitStatusAction(BaseActionTestCase):
 
     action_cls = GitStatusAction
+    input_file = "git_status.yaml"
 
     def test00_no_mock_st2(self):
         input = yaml.load(
@@ -45,8 +49,12 @@ class TestGitStatusAction(BaseActionTestCase):
 
         def _execute_command(_cmd):
             bool = True
-            stdout = ["Your branch is up-to-date with 'origin/devel-views'"]
-            stderr = [""]
+            #stdout = ["Your branch is up-to-date with 'origin/devel-views'"]
+            #stderr = [""]
+
+            res = set_response(BASE_DIR + "/tests/git_status/response.yaml")
+            stdout = res["succeeded"]["up_to_date"]["stdout"]
+            stderr = res["succeeded"]["up_to_date"]["stderr"]
 
             return bool, stdout, stderr
 
