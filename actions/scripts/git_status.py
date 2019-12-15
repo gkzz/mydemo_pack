@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import re
+import traceback
 from st2actions.runners.pythonrunner import Action
 
 from common_mydemo import Common
@@ -10,9 +11,8 @@ class GitStatusAction(Action):
     """Action class for st2"""
 
     def __init__(self, config):
-        self.output = []
-        self.result = {}
         self.config = config
+        self.result = {}
         for r in [
             "command", "branch", "expected", "bool", "stdout", "stderr"        
         ]:
@@ -28,10 +28,10 @@ class GitStatusAction(Action):
         redict = {
             'up_to_date': re.compile(
                 #   1       2          3      4              5        6
-                'r(Your)\s+(branch)\s+(is)\s+(up-to-date)\s+(with)\s+(\'origin\/" + re.escape(branch) + "'
+                r"(Your)\s+(branch)\s+(is)\s+(up-to-date)\s+(with)\s+('origin\/"+ re.escape(branch)  +"')"
             ),
             'not_up_to_date': re.compile(
-                "r(Your)\s+(branch)\s+(is)\s+(behind)\s+('origin/" + re.escape(branch) + "')"
+                r"(Your)\s+(branch)\s+(is)\s+(behind)\s+('origin\/"+ re.escape(branch)  +"')"
             ),
         }
 
@@ -55,13 +55,19 @@ class GitStatusAction(Action):
             else:
                 pass
 
-        if type(stdout) == list:
-            stdout = ','.join(stdout)
-        else:
-            pass
-
         return success, stdout
     
+
+    def _to_str(self, target):
+        """ Convert $target to string """
+
+        if type(target) == list:
+           return '\n'.join(map(str, target))
+        elif type(target) == str:
+           return target
+        else:
+           return str(target)
+       
 
     def write_result(self, command, branch, expected, bool, stdout, stderr):
         self.result.update({
@@ -69,8 +75,8 @@ class GitStatusAction(Action):
             "branch": branch,
             "expected": expected,
             "bool": bool,
-            "stdout": stdout,
-            "stderr": stderr,
+            "stdout": self._to_str(stdout),
+            "stderr": self._to_str(stderr),
         })
 
         return self.result
@@ -79,9 +85,10 @@ class GitStatusAction(Action):
     def run(self, working_dir, branch, expected):
         """ Entrypoint for st2 """
 
+        output = []
         bool = False
-        stdout = []
-        stderr = []
+        stdout = ''
+        stderr = ''
 
         try:
             command = self.set_command(working_dir)
@@ -92,11 +99,11 @@ class GitStatusAction(Action):
                 bool, stdout = self.check_stdout(branch, expected, stdout)
                 self.result = self.write_result(command, branch, expected, bool, stdout, stderr)
         except:
-            pass
+            stderr = traceback.format_exc()
 
         finally:
             self.result = self.write_result(command, branch, expected, bool, stdout, stderr)
         
-        self.output.append(self.result)
+        output.append(self.result)
 
-        return self.output 
+        return output

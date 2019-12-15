@@ -60,7 +60,7 @@ tasks:
         <% ctx().failed %>
         [action_result]
         <% ctx().bool %>
-        <% ctx().commnad %>
+        <% ctx().command %>
         <% ctx().expected %>
         <% ctx().stdout %>
         <% ctx().stderr %>

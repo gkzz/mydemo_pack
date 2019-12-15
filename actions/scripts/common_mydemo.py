@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import traceback
 from subprocess import Popen, PIPE
 
 
