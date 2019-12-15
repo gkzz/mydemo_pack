@@ -22,7 +22,9 @@ class TestGitStatusAction(BaseActionTestCase):
     action_cls = GitStatusAction
 
     def test00_no_mock_st2(self):
-        input = yaml.load(self.get_fixture_content(input_file))
+        input = yaml.load(
+            self.get_fixture_content(input_file), , Loader=yaml.FullLoader
+        )
 
         action = self.get_action_instance()
         output = action.run(**input)
@@ -33,25 +35,27 @@ class TestGitStatusAction(BaseActionTestCase):
         self.assertEqual(result["bool"], True)
     
     @patch("common_mydemo.Common.execute_command")
-    def test00_mock_st2(self, execute):
-        input = yaml.load(self.get_fixture_content(input_file))
+    def test01_mock_st2(self, execute):
+        input = yaml.load(
+            self.get_fixture_content(input_file), Loader=yaml.FullLoader
+        )
         #input.update({
         #    "key": value,
         #})
 
-        def _execute_command():
+        def _execute_command(_cmd):
             bool = True
-            stdout = ["Your branch is up-to-date with 'origin/devel-views"]
+            stdout = ["Your branch is up-to-date with 'origin/devel-views'"]
             stderr = [""]
 
-            return boolm stdout, stderr
+            return bool, stdout, stderr
 
         execute.side_effect = _execute_command
 
         action = self.get_action_instance()
-        results = action.run(**input)
+        output = action.run(**input)
 
-        print('results: {}'.format(results))
+        print('results: {}'.format(output))
 
         self.assertEquals(len(output), 1)
         result = output[0]
