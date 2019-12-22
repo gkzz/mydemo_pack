@@ -20,7 +20,6 @@ tasks:
     - publish:
         - failed: False
         - action_name: 'poll_repo'
-        - merged: False
       do: git_status_before_merged
   
   git_status_before_merged:
