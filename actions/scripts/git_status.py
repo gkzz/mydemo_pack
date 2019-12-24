@@ -22,7 +22,7 @@ class GitStatusAction(Action):
         return
 
 
-    def _git_fetch(dir, branch):
+    def _git_fetch(self, dir, branch):
         return "cd {dir} && sudo git fetch -p && sudo git checkout -q {branch}".format(
             dir=dir,
             branch=branch
@@ -103,7 +103,7 @@ class GitStatusAction(Action):
             cmd = self._git_fetch(working_dir, branch)
             bool, _, _ = self.common.execute_command(cmd)
             if bool:
-                command = self.set_command(working_dir, branch)
+                command = self.set_command(working_dir)
                 bool, stdout, stderr = self.common.execute_command(command)
                 if bool:
                     bool, stdout = self.check_stdout(branch, expected, stdout)
