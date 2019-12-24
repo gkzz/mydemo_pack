@@ -20,7 +20,6 @@ tasks:
     - publish:
         - failed: False
         - action_name: 'poll-repo-python'
-        - merged: False
       do: git_status_before_merged
   
   git_status_before_merged:
@@ -84,7 +83,7 @@ tasks:
               [result]
               <% result() %>
 
-  git_status_aeter_merged:
+  git_status_after_merged:
     action: mydemo_pack.git_status_python
     input:
       working_dir: <% ctx().working_dir %>
