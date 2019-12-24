@@ -1,0 +1,18 @@
+---
+name: "rebuild_app_python"
+pack: "mydemo_pack"
+description: "Rebuild App Container with python"
+enabled: true
+runner_type: "python-script"
+entry_point: "scripts/rebuild_app.py"
+parameters:
+  working_dir:
+    type: "string"
+    required: true
+    position: 0
+  ptn:
+    type: "string"
+    required: true
+    position: 1
+
+

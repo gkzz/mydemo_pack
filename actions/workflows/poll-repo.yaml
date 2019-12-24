@@ -99,7 +99,6 @@ tasks:
       - when: <% succeeded() %>
         do: post_msg
         publish:
-          - failed: False
           - action_result: <% result() %>
       - when: <% failed() %>
         do: check_failed
@@ -148,8 +147,7 @@ tasks:
         [action_result]
         <% ctx().action_result %>
     next:
-      - when: <% succeeded() or failed() %>
-        do: last
+      - do: last
   
   last:
     action: core.noop
