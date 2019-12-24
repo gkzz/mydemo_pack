@@ -20,37 +20,36 @@ class GitStatusAction(Action):
 
         self.common = Common()
         return
-
-    def set_command(self, dir):
-      return "cd {dir} && sudo git status".format(dir=dir)
-
-    def _set_regex(self, branch, expected):
-        redict = {
-            'up_to_date': re.compile(
-                #   1       2          3      4              5        6
-                r"(Your)\s+(branch)\s+(is)\s+(up-to-date)\s+(with)\s+('origin\/"+ re.escape(branch)  +"')"
-            ),
-            'not_up_to_date': re.compile(
-                r"(Your)\s+(branch)\s+(is)\s+(behind)\s+('origin\/"+ re.escape(branch)  +"')"
-            ),
-        }
-
-        ptn = None
-        if expected == "up_to_date":
-            ptn = redict['up_to_date']
-        elif expected == "not_up_to_date":
-            ptn = redict['not_up_to_date']
-        else:
-            pass
-
-        return ptn
+    
+    def _git_fetch(dir):
+        return "cd {dir} && sudo git fetch -p".format(
+            dir=dir
+        )
+    
+    def _git_checkout(branch):
+        return "sudo git checkout -q {branch}"
     
 
-    def check_stdout(self, branch, expected, stdout):
+    def _set_regex(self, branch, expected):
+        if expected == "up_to_date":
+            return "grep - E '(Your)\s+(branch)\s+(is)\s+(up-to-date)\s+(with)\s+('origin\/{branch}')' | awk '{print $6}'".format(
+                branch=branch
+            )
+        elif expected == "not_up_to_date"::
+            return "grep -E '(Your)\s+(branch)\s+(is)\s+(behind)\s+('origin\/{branch}')' | awk '{print $5}'".format(
+                branch=branch
+            )
+
+    def set_command(self, dir, branch, expected):
+        return (
+            self._git_fetch(dir) + " && " + self._git_checkout(branch) + " && sudo git status | " + self._set_regex(branch, expected)
+        )
+    
+
+    def check_stdout(self, branch, stdout):
         success = False
-        ptn = self._set_regex(branch, expected)
         for line in stdout:
-            if not success and ptn.search(line):
+            if not success and re.search(r'\s*' + re.escape(branch) + '\s*'):
                 success = True
             else:
                 pass
@@ -86,11 +85,12 @@ class GitStatusAction(Action):
         """ Entrypoint for st2 """
 
         bool = False
-        stdout = ''
-        stderr = ''
+        commands = []
+        stdout = []
+        stderr = []
 
         try:
-            command = self.set_command(working_dir)
+            command = self.set_command(working_dir, branch, expected)
             bool, stdout, stderr = self.common.execute_command(command)
             if not bool:
                 pass
