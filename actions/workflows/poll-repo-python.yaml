@@ -31,24 +31,134 @@ tasks:
       expected: <% ctx().expected %>
       timeout: <% ctx().timeout %>
     next:
-      - when: <% succeeded() and result().result.bool %>
+      - when: <% succeeded() and result().result.bool and (ctx().expected = 'up_to_date') %>
+        do: last
+        publish:
+          - action_result: |-
+              [bool] <% result().result.bool %>
+              [commnad] <% result().result.command %>
+              [expected] <% result().result.expected %>
+              [stdout] <% result().result.stdout %>
+              [stderr] <% result().result.stderr %>
+      - when: <% succeeded() and result().result.bool and (ctx().expected = 'not_up_to_date') %>
+        do: git_merge
+        publish:
+          - failed: False
+          - action_result: |-
+              [bool] <% result().result.bool %>
+              [commnad] <% result().result.command %>
+              [expected] <% result().result.expected %>
+              [stdout] <% result().result.stdout %>
+              [stderr] <% result().result.stderr %>
+      - when: <% failed() and (not ctx().failed) %>
+        do: git_status_before_merged
+        publish:
+          - failed: True
+          - expected: 'not_up_to_date'
+      - when: <% failed() and (ctx().failed) %>
         do: post_msg
         publish:
-          - bool: "[bool] <% result().result.bool %>"
-          - command: "[commnad] <% result().result.command %>"
-          - expected: " [expected] <% result().result.expected %>"
-          - stdout: "[stdout] <% result().result.stdout %>"
-          - stderr: "[stderr] <% result().result.stderr %>"
-
+          - action_result: |-
+              [bool] <% result().result.bool %>
+              [commnad] <% result().result.command %>
+              [expected] <% result().result.expected %>
+              [stdout] <% result().result.stdout %>
+              [stderr] <% result().result.stderr %>
+  
+  git_merge:
+    action: core.local
+    input:
+      cmd: sudo git merge origin/<% ctx().branch %>
+      cwd: <% ctx().working_dir %>
+      timeout: <% ctx().timeout %>
+    next:
+      - when: <% succeeded() %>
+        do: git_status_after_merged
+        publish:
+          - expected: 'up_to_date'
       - when: <% failed() %>
         do: post_msg
         publish:
-          - bool: "[bool] <% result().result.bool %>"
-          - command: "[commnad] <% result().result.command %>"
-          - expected: " [expected] <% result().result.expected %>"
-          - stdout: "[stdout] <% result().result.stdout %>"
-          - stderr: "[stderr] <% result().result.stderr %>"
+          - failed: True
+          - action_result: |-
+              [result]
+              <% result() %>
 
+  git_status_aeter_merged:
+    action: mydemo_pack.git_status_python
+    input:
+      working_dir: <% ctx().working_dir %>
+      branch: <% ctx().branch %>
+      expected: 'up_to_date'
+      timeout: <% ctx().timeout %>
+    next:
+      - when: <% succeeded() %>
+        do: rebuild_app
+        publish:
+          - action_result: |-
+              [bool] <% result().result.bool %>
+              [commnad] <% result().result.command %>
+              [expected] <% result().result.expected %>
+              [stdout] <% result().result.stdout %>
+              [stderr] <% result().result.stderr %>
+      - when: <% failed() %>
+        do: post_msg
+        publish:
+          - failed: True
+          - action_result: |-
+              [bool] <% result().result.bool %>
+              [commnad] <% result().result.command %>
+              [expected] <% result().result.expected %>
+              [stdout] <% result().result.stdout %>
+              [stderr] <% result().result.stderr %>
+      
+
+  rebuild_app:
+    action: mydemo_pack.rebuild_app
+    input:
+      working_dir: <% ctx().working_dir %>
+      ptn: <% ctx().ptn %>
+      timeout: <% ctx().timeout %>
+    next:
+      - when: <% succeeded() %>
+        do: post_msg
+        publish:
+          - action_result: <% result() %>
+      - when: <% failed() %>
+        do: check_failed
+        publish:
+          - action_result: <% result() %>
+          - rc: <% result().return_code %>
+
+  check_failed:
+    action: core.noop
+    next:
+    - when: <% ctx().rc = 201 %>
+      do: rebuild_app_cmd
+    - when: <% ctx().rc != 201 %>
+      do: post_msg
+      publish:
+      - failed: True 
+
+  rebuild_app_cmd:
+    action: core.local
+    input:
+      cmd: sudo docker-compose up -d --build
+      cwd: <% ctx().working_dir %>
+      timeout: 600
+    next:
+      - when: <% succeeded() %>
+        do: post_msg
+        publish:
+          - action_result: |-
+              [result]
+              <% result() %>
+      - when: <% failed() %>
+        do: post_msg
+        publish:
+          - action_result: |-
+              [result]
+              <% result() %>
   
   post_msg:
     action: slack.post_message
@@ -59,15 +169,9 @@ tasks:
         [failed]
         <% ctx().failed %>
         [action_result]
-        <% ctx().bool %>
-        <% ctx().command %>
-        <% ctx().expected %>
-        <% ctx().stdout %>
-        <% ctx().stderr %>
-
+        <% ctx().action_result %>
     next:
-      - when: <% succeeded() or failed() %>
-        do: last
+      - do: last
   
   last:
     action: core.noop

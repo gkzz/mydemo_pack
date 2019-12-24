@@ -21,45 +21,41 @@ class RebuildAppAction(Action):
         self.common = Common()
         return
 
-    def set_command(self, working_dir):
+    def set_command(self, working_dir, ptn):
         return (
-            "cd {dir} && sudo docker container ls".format(
+            "cd {dir} && sudo docker container ls grep -E '{ptn}' | awk '{print $1}'".format(
                 dir=dir,
+                ptn=ptn
             )
         )
 
-    def _set_regex(self, branch, expected):
-        redict = {
-            'up_to_date': re.compile(
-                #   1       2          3      4              5        6
-                r"(Your)\s+(branch)\s+(is)\s+(up-to-date)\s+(with)\s+('origin\/"+ re.escape(branch)  +"')"
-            ),
-            'not_up_to_date': re.compile(
-                r"(Your)\s+(branch)\s+(is)\s+(behind)\s+('origin\/"+ re.escape(branch)  +"')"
-            ),
-        }
-
-        ptn = None
-        if expected == "up_to_date":
-            ptn = redict['up_to_date']
-        elif expected == "not_up_to_date":
-            ptn = redict['not_up_to_date']
-        else:
-            pass
-
-        return ptn
     
-
-    def check_stdout(self, branch, expected, stdout):
-        success = False
-        ptn = self._set_regex(branch, expected)
-        for line in stdout:
-            if not success and ptn.search(line):
-                success = True
+    def rebuild(ids):
+        bool = False
+        cmds = []
+        stdout = []
+        stderr = []
+        counter = 0
+        for id in ids:
+            cmd = "sudo docker container stop {id} && sudo docker container rm {id}".format(id=id)
+            bool, res, err = self.common.execute_command(cmd)
+            cmds.append(cmd) 
+            stdout = stdout + res
+            stderr = stderr + err
+            if not bool:
+                break
             else:
-                pass
+                counter += 1
+        
+        if len(ids) == 0 or counter == 2:
+            cmd = "sudo docker-compose up -d --build"
+            bool, res, err = self.common.execute_command(cmd)
+            cmds.append(cmd) 
+            stdout = stdout + res
+            stderr = stderr + err
+        
+        return cmds, bool, stdout, stderr
 
-        return success, stdout
     
 
     def _to_str(self, target):
@@ -86,7 +82,7 @@ class RebuildAppAction(Action):
         return self.result
     
 
-    def run(self, working_dir, branch, expected):
+    def run(self, working_dir, ptn):
         """ Entrypoint for st2 """
 
         bool = False
@@ -94,11 +90,12 @@ class RebuildAppAction(Action):
         stderr = ''
 
         try:
-            command = self.set_command(working_dir)
-            bool, stdout, stderr = self.common.execute_command(command)
+            ls,_command = self.set_command(working_dir, ptn)
+            bool, stdout, stderr = self.common.execute_command(ls_command)
             if not bool:
                 pass
             else:
+                bool, stdout, stderr = self.rebuild(ls,_command, stdout)
                 bool, stdout = self.check_stdout(branch, expected, stdout)
                 self.result = self.write_result(command, branch, expected, bool, stdout, stderr)
         except:
