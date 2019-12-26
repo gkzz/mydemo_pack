@@ -30,7 +30,7 @@ tasks:
       expected: <% ctx().expected %>
       timeout: <% ctx().timeout %>
     next:
-      - when: <% succeeded() and result().result.bool and (ctx().expected = 'up_to_date') %>
+      - when: <% succeeded() and str(result().result.bool) = "true" and (ctx().expected = 'up_to_date') %>
         do: last
         publish:
           - action_result: |-
@@ -39,7 +39,7 @@ tasks:
               [expected] <% result().result.expected %>
               [stdout] <% result().result.stdout %>
               [stderr] <% result().result.stderr %>
-      - when: <% succeeded() and (not result().result.bool) and (ctx().expected = 'not_up_to_date') %>
+      - when: <% succeeded() and str(result().result.bool) = "true" and (ctx().expected = 'not_up_to_date') %>
         do: git_merge
         publish:
           - failed: False
@@ -49,14 +49,15 @@ tasks:
               [expected] <% result().result.expected %>
               [stdout] <% result().result.stdout %>
               [stderr] <% result().result.stderr %>
-      - when: <% failed() and (not ctx().failed) %>
+      - when: <% succeeded() and str(result().result.bool) = "false" and (ctx().expected = 'up_to_date') %>
         do: git_status_before_merged
         publish:
           - failed: True
           - expected: 'not_up_to_date'
-      - when: <% failed() and (ctx().failed) %>
+      - when: <% failed() or str(result().result.bool) = "false" %>
         do: post_msg
         publish:
+          - failed: True
           - action_result: |-
               [bool] <% result().result.bool %>
               [commnad] <% result().result.command %>
@@ -82,7 +83,6 @@ tasks:
           - action_result: |-
               [result]
               <% result() %>
-
   git_status_after_merged:
     action: mydemo_pack.git_status_python
     input:
@@ -91,7 +91,7 @@ tasks:
       expected: 'up_to_date'
       timeout: <% ctx().timeout %>
     next:
-      - when: <% succeeded() %>
+      - when: <% succeeded() and str(result().result.bool) = "true" %>
         do: rebuild_app
         publish:
           - action_result: |-
@@ -100,7 +100,7 @@ tasks:
               [expected] <% result().result.expected %>
               [stdout] <% result().result.stdout %>
               [stderr] <% result().result.stderr %>
-      - when: <% failed() %>
+      - when: <% failed() or str(result().result.bool) = "false" %>
         do: post_msg
         publish:
           - failed: True
@@ -113,7 +113,8 @@ tasks:
       
 
   rebuild_app:
-    action: mydemo_pack.rebuild_app
+    #action: mydemo_pack.rebuild_app
+    action: mydemo_pack.rebuild_app_python
     input:
       working_dir: <% ctx().working_dir %>
       ptn: <% ctx().ptn %>
@@ -177,5 +178,3 @@ tasks:
     next:
       - when: <% ctx().failed %>
         do: fail
-  
-  

@@ -90,13 +90,12 @@ class RebuildAppAction(Action):
         stderr = ''
 
         try:
-            ls,_command = self.set_command(working_dir, ptn)
+            ls_command = self.set_command(working_dir, ptn)
             bool, stdout, stderr = self.common.execute_command(ls_command)
             if not bool:
                 pass
             else:
-                bool, stdout, stderr = self.rebuild(ls,_command, stdout)
-                bool, stdout = self.check_stdout(branch, expected, stdout)
+                bool, stdout, stderr = self.rebuild(stdout)
                 self.result = self.write_result(command, branch, expected, bool, stdout, stderr)
         except:
             stderr = traceback.format_exc()
