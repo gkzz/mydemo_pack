@@ -69,9 +69,9 @@ class RebuildAppAction(Action):
            return str(target)
        
 
-    def write_result(self, command, branch, expected, bool, stdout, stderr):
+    def write_result(self, cmds, bool, stdout, stderr):
         self.result.update({
-            "command": command,
+            "command": self._to_str(cmds),
             "branch": branch,
             "expected": expected,
             "bool": bool,
@@ -88,6 +88,7 @@ class RebuildAppAction(Action):
         bool = False
         stdout = ''
         stderr = ''
+        commands = ''
 
         try:
             ls_command = self.set_command(working_dir, ptn)
@@ -95,12 +96,12 @@ class RebuildAppAction(Action):
             if not bool:
                 pass
             else:
-                bool, stdout, stderr = self.rebuild(stdout)
-                self.result = self.write_result(command, branch, expected, bool, stdout, stderr)
+                commands, bool, stdout, stderr = self.rebuild(stdout)
+                self.result = self.write_result(commands, bool, stdout, stderr)
         except:
             stderr = traceback.format_exc()
 
         finally:
-            self.result = self.write_result(command, branch, expected, bool, stdout, stderr)
+            self.result = self.write_result(commands, bool, stdout, stderr)
         
         return self.result

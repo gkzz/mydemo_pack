@@ -54,7 +54,7 @@ tasks:
         publish:
           - failed: True
           - expected: 'not_up_to_date'
-      - when: <% failed() or str(result().result.bool) = "false" %>
+      - when: <% failed() %>
         do: post_msg
         publish:
           - failed: True
@@ -100,7 +100,7 @@ tasks:
               [expected] <% result().result.expected %>
               [stdout] <% result().result.stdout %>
               [stderr] <% result().result.stderr %>
-      - when: <% failed() or str(result().result.bool) = "false" %>
+      - when: <% failed() %>
         do: post_msg
         publish:
           - failed: True
@@ -123,42 +123,22 @@ tasks:
       - when: <% succeeded() %>
         do: post_msg
         publish:
-          - action_result: <% result() %>
-      - when: <% failed() %>
-        do: check_failed
-        publish:
-          - action_result: <% result() %>
-          - rc: <% result().return_code %>
-
-  check_failed:
-    action: core.noop
-    next:
-    - when: <% ctx().rc = 201 %>
-      do: rebuild_app_cmd
-    - when: <% ctx().rc != 201 %>
-      do: post_msg
-      publish:
-      - failed: True 
-
-  rebuild_app_cmd:
-    action: core.local
-    input:
-      cmd: sudo docker-compose up -d --build
-      cwd: <% ctx().working_dir %>
-      timeout: 600
-    next:
-      - when: <% succeeded() %>
-        do: post_msg
-        publish:
           - action_result: |-
-              [result]
-              <% result() %>
+              [bool] <% result().result.bool %>
+              [commnad] <% result().result.command %>
+              [expected] <% result().result.expected %>
+              [stdout] <% result().result.stdout %>
+              [stderr] <% result().result.stderr %>
       - when: <% failed() %>
         do: post_msg
         publish:
+          - failed: True
           - action_result: |-
-              [result]
-              <% result() %>
+              [bool] <% result().result.bool %>
+              [commnad] <% result().result.command %>
+              [expected] <% result().result.expected %>
+              [stdout] <% result().result.stdout %>
+              [stderr] <% result().result.stderr %>
   
   post_msg:
     action: slack.post_message
