@@ -19,9 +19,11 @@ parameters:
     required: true
     default: "up_to_date"
   ptn:
-    type: "string"
+    type: "array"
     required: true
-    default: "flask-docker_flask|flask-docker_nginx"
+    default: 
+      - "flask-docker_flask"
+      - "flask-docker_nginx"
   timeout:
     type: "integer"
     required: true

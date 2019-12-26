@@ -120,23 +120,21 @@ tasks:
       ptn: <% ctx().ptn %>
       timeout: <% ctx().timeout %>
     next:
-      - when: <% succeeded() %>
+      - when: <% succeeded() and str(result().result.bool) = "true" %>
         do: post_msg
         publish:
           - action_result: |-
               [bool] <% result().result.bool %>
               [commnad] <% result().result.command %>
-              [expected] <% result().result.expected %>
               [stdout] <% result().result.stdout %>
               [stderr] <% result().result.stderr %>
-      - when: <% failed() %>
+      - when: <% failed() or str(result().result.bool) = "false" %>
         do: post_msg
         publish:
           - failed: True
           - action_result: |-
               [bool] <% result().result.bool %>
               [commnad] <% result().result.command %>
-              [expected] <% result().result.expected %>
               [stdout] <% result().result.stdout %>
               [stderr] <% result().result.stderr %>
   

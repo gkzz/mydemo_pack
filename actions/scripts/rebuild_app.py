@@ -21,13 +21,41 @@ class RebuildAppAction(Action):
         self.common = Common()
         return
 
-    def set_command(self, working_dir, ptn):
+    def set_command(self, dir, ptns):
         return (
-            "cd {dir} && sudo docker container ls grep -E '{ptn}' | awk '{print $1}'".format(
+            "cd {dir} && sudo docker container ls grep -E '{former}|{latter}'".format(
                 dir=dir,
-                ptn=ptn
+                former=ptn[0],
+                latter=ptn[1]
             )
         )
+    
+    def _set_regex(self, ptns):
+        redict = {
+            'former': re.compile(
+                #  0                  1
+                r'([\d+|\D+]+)\s+(' + re.escape(ptns[0]) + ')'
+            ),
+            'latter': re.compile(
+                #  0                  1
+                #r'([\d+|\D+]+)\s+(' + re.escape(ptns[1])
+                r'([\d+|\D+]+)\s+(' + re.escape(ptns[1]) + ')'
+            ),
+        }
+        return redict
+    
+    def get_regex(array, redict):
+        found = []
+        success = False
+        for line in array:
+            m = redict['former'].search(line) or redict['latter'].search(line)
+            if m:
+                found.append(m.group(0))
+        
+        if len(found) == 2:
+            success = True
+        
+        return success, found
 
     
     def rebuild(ids):
@@ -72,8 +100,6 @@ class RebuildAppAction(Action):
     def write_result(self, cmds, bool, stdout, stderr):
         self.result.update({
             "command": self._to_str(cmds),
-            "branch": branch,
-            "expected": expected,
             "bool": bool,
             "stdout": self._to_str(stdout),
             "stderr": self._to_str(stderr),
