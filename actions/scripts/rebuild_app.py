@@ -127,8 +127,8 @@ class RebuildAppAction(Action):
 
     def write_result(self, cmds, bool, stdout, stderr):
         self.result.update({
-            "command": self._to_str(cmds),
             "bool": bool,
+            "command": self._to_str(cmds),
             "stdout": self._to_str(stdout),
             "stderr": self._to_str(stderr),
         })
