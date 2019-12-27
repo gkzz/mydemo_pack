@@ -14,21 +14,27 @@ class RebuildAppAction(Action):
         self.config = config
         self.result = {}
         for r in [
-            "command", "branch", "bool", "stdout", "stderr"        
+            "command", "bool", "stdout", "stderr"        
         ]:
             self.result[r] = None 
 
         self.common = Common()
         return
 
-    def set_command(self, dir, ptns):
-        return (
-            "cd {dir} && sudo docker container ls grep -E '{former}|{latter}'".format(
-                dir=dir,
-                former=ptns[0],
-                latter=ptns[1]
+    def set_command(self, dir, ptns=None):
+        if ptns is None:
+            return (
+                "cd {dir} && sudo docker-compose up -d --build".format(
+                    dir=dir
+                )
+        else:
+            return (
+                "cd {dir} && sudo docker container ls | grep -E '{former}|{latter}'".format(
+                    dir=dir,
+                    former=ptns[0],
+                    latter=ptns[1]
+                )
             )
-        )
     
     def _set_regex(self, ptns):
         redict = {
@@ -42,23 +48,23 @@ class RebuildAppAction(Action):
             #    r'([\d+|\D+]+)\s+(' + re.escape(ptns[1]) + ')'
             #),
             'target': re.compile(
-                r'([\d+|\D+]+)\s+(' + re.escape(ptns[0]) + '|'   + re.escape(ptns[1]) +  ')'
+                r'(\S+)\s+(' + re.escape(ptns[0]) + '|'   + re.escape(ptns[1]) +  ')'
             )
         }
         return redict
     
-    def get_regex(array, ptns):
+    def get_regex(self, array, ptns):
         found = []
         redict = self._set_regex(ptns)
         for line in array:
             m =  redict['target'].search(line)
             if m:
-                found.append(m.group(0))
+                found.append(m.group(1))
         
         return found
 
     
-    def rebuild(ids):
+    def rebuild(self, ids):
         bool = False
         cmds = []
         stdout = []
@@ -68,15 +74,17 @@ class RebuildAppAction(Action):
             cmd = "sudo docker container stop {id} && sudo docker container rm {id}".format(id=id)
             bool, res, err = self.common.execute_command(cmd)
             cmds.append(cmd) 
-            stdout = stdout + res
-            stderr = stderr + err
-            if not bool:
-                break
-            else:
+            stdout += res
+            stderr += err
+            if bool:
                 counter += 1
+            else:
+                break
+                
         
         if len(ids) == 0 or counter == 2:
-            cmd = "sudo docker-compose up -d --build"
+            # "cd {dir} && sudo docker-compose up -d --build"
+            cmd = self.set_command(working_dir)
             bool, res, err = self.common.execute_command(cmd)
             cmds.append(cmd) 
             stdout += res
@@ -121,7 +129,7 @@ class RebuildAppAction(Action):
             ls_command = self.set_command(working_dir, ptns)
             bool, stdout, stderr = self.common.execute_command(ls_command)
             if bool:
-                ids = get_regex(stdout, ptns)
+                ids = self.get_regex(stdout, ptns)
                 commands, bool, stdout, stderr = self.rebuild(ids)
                 commands.insert(0, ls_command)
                 self.result = self.write_result(commands, bool, stdout, stderr)

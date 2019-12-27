@@ -18,7 +18,7 @@ sys.path.append('/opt/stackstorm/st2/lib/python2.7/site-packages')
 input_file = "rebuild_app.yaml"
 res_file = BASE_DIR + "/tests/rebuild_app/response.yaml"
 
-from rebuild_app import GitStatusAction
+from rebuild_app import RebuildAppAction
 
 class TestRebuildAppAction(BaseActionTestCase):
 
@@ -78,7 +78,7 @@ class TestRebuildAppAction(BaseActionTestCase):
         result = action.run(**input)
         print('result: {r}'.format(r=result))
 
-        self.assertEquals(len(reuslt), 6)
+        self.assertEquals(len(result), 4)
         self.assertEqual(result["bool"], True)
 
 
