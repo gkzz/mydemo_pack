@@ -21,20 +21,39 @@ class RebuildAppAction(Action):
         self.common = Common()
         return
 
-    def set_command(self, dir, ptns=None):
-        if ptns is None:
-            return (
-                "cd {dir} && sudo docker-compose up -d --build".format(
-                    dir=dir
+    def set_command(self, dir, ptns=None, id=None):
+        try:
+            if ptns is None and id is None:
+                return (
+                    "cd {dir} && sudo docker-compose up -d --build".format(
+                        dir=dir
+                    )
                 )
-        else:
-            return (
-                "cd {dir} && sudo docker container ls | grep -E '{former}|{latter}'".format(
-                    dir=dir,
-                    former=ptns[0],
-                    latter=ptns[1]
+            elif ptns is not None and id is None:
+                return (
+                    "cd {dir} && sudo docker container ls | grep -E '{former}|{latter}'".format(
+                        dir=dir,
+                        former=ptns[0],
+                        latter=ptns[1]
+                    )
                 )
-            )
+            elif ptns is None and id is not None:
+                return (
+                    "cd {dir} && sudo docker container stop {id} && sudo docker container rm {id}".format(
+                        dir=dir,
+                        id=id
+                    )
+                )
+            else:
+                raise ArgumentError("""
+                   The following arguments are unexpected
+                   {dir}, {ptns}, {id}
+                """.format(dir=dir, ptns=ptns, id=id))
+
+        except ArgumentError as ae:
+            return traceback.format_exc()
+
+
     
     def _set_regex(self, ptns):
         redict = {
@@ -64,14 +83,15 @@ class RebuildAppAction(Action):
         return found
 
     
-    def rebuild(self, ids):
+    def rebuild(self, dir, ids):
         bool = False
         cmds = []
         stdout = []
         stderr = []
         counter = 0
         for id in ids:
-            cmd = "sudo docker container stop {id} && sudo docker container rm {id}".format(id=id)
+            # "cd {dir} && sudo docker container stop {id} && sudo docker container rm {id}"
+            cmd = self.set_command(dir, id)
             bool, res, err = self.common.execute_command(cmd)
             cmds.append(cmd) 
             stdout += res
@@ -84,7 +104,7 @@ class RebuildAppAction(Action):
         
         if len(ids) == 0 or counter == 2:
             # "cd {dir} && sudo docker-compose up -d --build"
-            cmd = self.set_command(working_dir)
+            cmd = self.set_command(dir)
             bool, res, err = self.common.execute_command(cmd)
             cmds.append(cmd) 
             stdout += res
