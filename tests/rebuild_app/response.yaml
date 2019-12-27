@@ -1,9 +1,20 @@
 "succeeded":
-  "stdout":
-    - "e155020b088b flask-docker_flask         \"uwsgi app.ini\"         14 minutes ago      Up 14 minutes       8080/tcp                                               flask"
-    - "56d70be79764 flask-docker_nginx          \"nginx \-g 'daemon of…\"   14 minutes ago      Up 14 minutes       0.0.0.0\:80\->80\/tcp                                    nginx"
-  "stderr":
-    - ""
+  "ls":
+    "stdout":
+      - "e155020b088b flask-docker_flask         \"uwsgi app.ini\"         14 minutes ago      Up 14 minutes       8080/tcp                                               flask"
+      - "56d70be79764 flask-docker_nginx          \"nginx -g 'daemon of…\"   14 minutes ago      Up 14 minutes       0.0.0.0:80->80/tcp                                    nginx"
+    "stderr":
+      - ""
+  "rm":
+    "stdout":
+      - ""
+    "stderr":
+      - ""
+  "build":
+    "stdout":
+      - ""
+    "stderr":
+      - ""
 "failed":
   "stdout":
     - ""
