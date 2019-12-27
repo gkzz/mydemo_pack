@@ -18,6 +18,8 @@ if [ -d "$working_dir" ]; then
   if [ $counter -eq 2 ]; then
     sudo docker-compose up -d --build
     counter=`expr $counter + 1`
+  elif [ $counter -eq 0 ]; then
+    exit 201
   fi
 fi
 
