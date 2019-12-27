@@ -10,7 +10,7 @@ parameters:
     type: "string"
     required: true
     position: 0
-  ptn:
+  ptns:
     type: "array"
     required: true
     position: 1

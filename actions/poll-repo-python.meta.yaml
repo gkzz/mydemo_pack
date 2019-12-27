@@ -18,7 +18,7 @@ parameters:
     type: "string"
     required: true
     default: "up_to_date"
-  ptn:
+  ptns:
     type: "array"
     required: true
     default: 

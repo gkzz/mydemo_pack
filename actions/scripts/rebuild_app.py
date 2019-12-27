@@ -25,37 +25,37 @@ class RebuildAppAction(Action):
         return (
             "cd {dir} && sudo docker container ls grep -E '{former}|{latter}'".format(
                 dir=dir,
-                former=ptn[0],
-                latter=ptn[1]
+                former=ptns[0],
+                latter=ptns[1]
             )
         )
     
     def _set_regex(self, ptns):
         redict = {
-            'former': re.compile(
-                #  0                  1
-                r'([\d+|\D+]+)\s+(' + re.escape(ptns[0]) + ')'
-            ),
-            'latter': re.compile(
-                #  0                  1
-                #r'([\d+|\D+]+)\s+(' + re.escape(ptns[1])
-                r'([\d+|\D+]+)\s+(' + re.escape(ptns[1]) + ')'
-            ),
+            #'former': re.compile(
+            #    #  0                  1
+            #    r'([\d+|\D+]+)\s+(' + re.escape(ptns[0]) + ')'
+            #),
+            #'latter': re.compile(
+            #    #  0                  1
+            #    #r'([\d+|\D+]+)\s+(' + re.escape(ptns[1])
+            #    r'([\d+|\D+]+)\s+(' + re.escape(ptns[1]) + ')'
+            #),
+            'target': re.compile(
+                r'([\d+|\D+]+)\s+(' + re.escape(ptns[0]) + '|'   + re.escape(ptns[1]) +  ')'
+            )
         }
         return redict
     
-    def get_regex(array, redict):
+    def get_regex(array, ptns):
         found = []
-        success = False
+        redict = self._set_regex(ptns)
         for line in array:
-            m = redict['former'].search(line) or redict['latter'].search(line)
+            m =  redict['target'].search(line)
             if m:
                 found.append(m.group(0))
         
-        if len(found) == 2:
-            success = True
-        
-        return success, found
+        return found
 
     
     def rebuild(ids):
@@ -108,7 +108,7 @@ class RebuildAppAction(Action):
         return self.result
     
 
-    def run(self, working_dir, ptn):
+    def run(self, working_dir, ptns):
         """ Entrypoint for st2 """
 
         bool = False
@@ -117,17 +117,23 @@ class RebuildAppAction(Action):
         commands = ''
 
         try:
-            ls_command = self.set_command(working_dir, ptn)
+            # "cd {dir} && sudo docker container ls grep -E '{former}|{latter}'"
+            ls_command = self.set_command(working_dir, ptns)
             bool, stdout, stderr = self.common.execute_command(ls_command)
-            if not bool:
-                pass
-            else:
-                commands, bool, stdout, stderr = self.rebuild(stdout)
+            if bool:
+                ids = get_regex(stdout, ptns)
+                commands, bool, stdout, stderr = self.rebuild(ids)
+                commands.insert(0, ls_command)
                 self.result = self.write_result(commands, bool, stdout, stderr)
+            else:
+                self.result = self.write_result(ls_command, bool, stdout, stderr)
+
         except:
             stderr = traceback.format_exc()
+            self.result = self.write_result('', bool, stdout, stderr)
 
-        finally:
-            self.result = self.write_result(commands, bool, stdout, stderr)
+        #finally:
+        #    self.result = self.write_result(commands, bool, stdout, stderr)
+            
         
         return self.result
