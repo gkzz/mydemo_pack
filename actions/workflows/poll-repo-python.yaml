@@ -6,7 +6,7 @@ input:
   - working_dir
   - branch
   - expected
-  - ptn
+  - ptns
   - timeout
 
 output:
@@ -113,11 +113,10 @@ tasks:
       
 
   rebuild_app:
-    #action: mydemo_pack.rebuild_app
     action: mydemo_pack.rebuild_app_python
     input:
       working_dir: <% ctx().working_dir %>
-      ptn: <% ctx().ptn %>
+      ptns: <% ctx().ptns %>
       timeout: <% ctx().timeout %>
     next:
       - when: <% succeeded() and str(result().result.bool) = "true" %>
