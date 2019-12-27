@@ -91,7 +91,7 @@ class RebuildAppAction(Action):
         counter = 0
         for id in ids:
             # "cd {dir} && sudo docker container stop {id} && sudo docker container rm {id}"
-            cmd = self.set_command(dir, id)
+            cmd = self.set_command(dir=dir, id=id)
             bool, res, err = self.common.execute_command(cmd)
             cmds.append(cmd) 
             stdout += res
@@ -104,7 +104,7 @@ class RebuildAppAction(Action):
         
         if len(ids) == 0 or counter == 2:
             # "cd {dir} && sudo docker-compose up -d --build"
-            cmd = self.set_command(dir)
+            cmd = self.set_command(dir=dir)
             bool, res, err = self.common.execute_command(cmd)
             cmds.append(cmd) 
             stdout += res
@@ -146,11 +146,11 @@ class RebuildAppAction(Action):
 
         try:
             # "cd {dir} && sudo docker container ls grep -E '{former}|{latter}'"
-            ls_command = self.set_command(working_dir, ptns)
+            ls_command = self.set_command(dir=working_dir, ptns=ptns)
             bool, stdout, stderr = self.common.execute_command(ls_command)
             if bool:
                 ids = self.get_regex(stdout, ptns)
-                commands, bool, stdout, stderr = self.rebuild(ids)
+                commands, bool, stdout, stderr = self.rebuild(working_dir, ids)
                 commands.insert(0, ls_command)
                 self.result = self.write_result(commands, bool, stdout, stderr)
             else:

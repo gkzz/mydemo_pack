@@ -50,21 +50,28 @@ class TestRebuildAppAction(BaseActionTestCase):
             stderr = []
             _res = yaml.load(open(res_file), Loader=yaml.FullLoader)
 
-            if 'ls' in cmd and 'grep' in cmd:
+            if 'ls' in _cmd and 'grep' in _cmd:
                 _bool = True
-                _stdout = res["succeeded"]["ls"]["stdout"]
-                _stderr = res["succeeded"]["ls"]["stderr"]
+                _stdout = _res["succeeded"]["ls"]["stdout"]
+                _stderr = _res["succeeded"]["ls"]["stderr"]
 
 
-            elif 'stop' in cmd and 'rm' in cmd:
+            elif 'stop' in _cmd and 'rm' in _cmd:
                 _bool = True
-                _stdout = res["succeeded"]["rm"]["stdout"]
-                _stderr = res["succeeded"]["rm"]["stderr"]
+                _stderr = _res["succeeded"]["rm"]["stderr"]
+                if _execute.call_count == 2:
+                    _stdout = _res["succeeded"]["rm"]["former"]["stdout"]
+                elif _execute.call_count == 3:
+                    _stdout = _res["succeeded"]["rm"]["latter"]["stdout"]
+                else:
+                    _bool = False
+                    raise Error("docker_container_rm_err")
 
-            elif '--build' in cmd:
+
+            elif '--build' in _cmd:
                 _bool = True
-                _stdout = res["succeeded"]["build"]["stdout"]
-                _stderr = res["succeeded"]["build"]["stderr"]
+                _stdout = _res["succeeded"]["build"]["stdout"]
+                _stderr = _res["succeeded"]["build"]["stderr"]
             
             else:
                 raise Error("_excute_command_err")

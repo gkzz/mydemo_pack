@@ -7,7 +7,12 @@
       - ""
   "rm":
     "stdout":
-      - ""
+      "former":
+        - "e155020b088b"
+        - "e155020b088b"
+      "latter":
+        - "56d70be79764"
+        - "56d70be79764"
     "stderr":
       - ""
   "build":
