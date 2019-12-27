@@ -16,7 +16,7 @@ sys.path.append('/opt/stackstorm/virtualenvs/mydemo_pack/lib/python2.7/site-pack
 sys.path.append('/opt/stackstorm/st2/lib/python2.7/site-packages')
 
 input_file = "git_status.yaml"
-resp_file = BASE_DIR + "/tests/git_status/response.yaml"
+res_file = BASE_DIR + "/tests/git_status/response.yaml"
 
 from git_status import GitStatusAction
 
@@ -47,9 +47,9 @@ class TestGitStatusAction(BaseActionTestCase):
             #stdout = ["Your branch is up-to-date with 'origin/devel-views'"]
             #stderr = [""]
 
-            resp = yaml.load(open(resp_file), Loader=yaml.FullLoader)
-            stdout = resp["succeeded"]["up_to_date"]["stdout"]
-            stderr = resp["succeeded"]["up_to_date"]["stderr"]
+            res = yaml.load(open(resp_file), Loader=yaml.FullLoader)
+            stdout = res["succeeded"]["up_to_date"]["stdout"]
+            stderr = res["succeeded"]["up_to_date"]["stderr"]
 
             return bool, stdout, stderr
 

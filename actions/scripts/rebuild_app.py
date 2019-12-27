@@ -79,8 +79,8 @@ class RebuildAppAction(Action):
             cmd = "sudo docker-compose up -d --build"
             bool, res, err = self.common.execute_command(cmd)
             cmds.append(cmd) 
-            stdout = stdout + res
-            stderr = stderr + err
+            stdout += res
+            stderr += err
         
         return cmds, bool, stdout, stderr
 

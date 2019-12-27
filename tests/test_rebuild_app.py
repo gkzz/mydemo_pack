@@ -16,13 +16,15 @@ sys.path.append('/opt/stackstorm/virtualenvs/mydemo_pack/lib/python2.7/site-pack
 sys.path.append('/opt/stackstorm/st2/lib/python2.7/site-packages')
 
 input_file = "rebuild_app.yaml"
-resp_file = BASE_DIR + "/tests/rebuild_app/response.yaml"
+res_file = BASE_DIR + "/tests/rebuild_app/response.yaml"
 
 from rebuild_app import GitStatusAction
 
 class TestRebuildAppAction(BaseActionTestCase):
 
     action_cls = RebuildAppAction
+    class_common = "common_mydemo.Common"
+    method_execute = class_common + ".execute_command"
 
     def test00_no_mock_st2(self):
         input = yaml.load(
@@ -36,23 +38,39 @@ class TestRebuildAppAction(BaseActionTestCase):
         #self.assertEquals(len(reuslt), 6)
         self.assertEqual(result["bool"], True)
     
-    """
-    @patch("common_mydemo.Common.execute_command")
+    @patch(method_execute)
     def test01_mock_st2(self, execute):
         input = yaml.load(
             self.get_fixture_content(input_file), Loader=yaml.FullLoader
         )
 
         def _execute_command(_cmd):
-            bool = True
-            #stdout = ["Your branch is up-to-date with 'origin/devel-views'"]
-            #stderr = [""]
+            _bool = False
+            stdout = []
+            stderr = []
+            _res = yaml.load(open(res_file), Loader=yaml.FullLoader)
 
-            resp = yaml.load(open(resp_file), Loader=yaml.FullLoader)
-            stdout = resp["succeeded"]["up_to_date"]["stdout"]
-            stderr = resp["succeeded"]["up_to_date"]["stderr"]
+            if 'ls' in cmd and 'grep' in cmd:
+                _bool = True
+                _stdout = res["succeeded"]["ls"]["stdout"]
+                _stderr = res["succeeded"]["ls"]["stderr"]
 
-            return bool, stdout, stderr
+
+            elif 'stop' in cmd and 'rm' in cmd:
+                _bool = True
+                _stdout = res["succeeded"]["rm"]["stdout"]
+                _stderr = res["succeeded"]["rm"]["stderr"]
+
+            elif '--build' in cmd:
+                _bool = True
+                _stdout = res["succeeded"]["build"]["stdout"]
+                _stderr = res["succeeded"]["build"]["stderr"]
+            
+            else:
+                raise Error("_excute_command_err")
+
+
+            return _bool, _stdout, _stderr
 
         execute.side_effect = _execute_command
 
@@ -62,6 +80,6 @@ class TestRebuildAppAction(BaseActionTestCase):
 
         self.assertEquals(len(reuslt), 6)
         self.assertEqual(result["bool"], True)
-    """
+
 
 
