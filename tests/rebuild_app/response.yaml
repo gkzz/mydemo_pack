@@ -6,7 +6,7 @@
         - "56d70be79764 flask-docker_nginx          \"nginx -g 'daemon of…\"   14 minutes ago      Up 14 minutes       0.0.0.0:80->80/tcp                                    nginx"
       "not_exists":
         - ""
-      "stderr":
+    "stderr":
       - ""
   "rm":
     "stdout":

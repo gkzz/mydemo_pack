@@ -140,9 +140,9 @@ class RebuildAppAction(Action):
         """ Entrypoint for st2 """
 
         bool = False
-        stdout = ''
-        stderr = ''
-        commands = ''
+        stdout = []
+        stderr = []
+        commands = []
 
         try:
             # "cd {dir} && sudo docker container ls grep -E '{former}|{latter}'"

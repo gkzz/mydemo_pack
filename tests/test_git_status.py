@@ -33,7 +33,7 @@ class TestGitStatusAction(BaseActionTestCase):
         result = action.run(**input)
         print('result: {r}'.format(r=result))
 
-        self.assertEquals(len(reuslt), 6)
+        self.assertEquals(len(result), 6)
         self.assertEqual(result["bool"], True)
     
     @patch("common_mydemo.Common.execute_command")
@@ -47,7 +47,7 @@ class TestGitStatusAction(BaseActionTestCase):
             #stdout = ["Your branch is up-to-date with 'origin/devel-views'"]
             #stderr = [""]
 
-            res = yaml.load(open(resp_file), Loader=yaml.FullLoader)
+            res = yaml.load(open(res_file), Loader=yaml.FullLoader)
             stdout = res["succeeded"]["up_to_date"]["stdout"]
             stderr = res["succeeded"]["up_to_date"]["stderr"]
 
@@ -59,7 +59,7 @@ class TestGitStatusAction(BaseActionTestCase):
         result = action.run(**input)
         print('result: {r}'.format(r=result))
 
-        self.assertEquals(len(reuslt), 6)
+        self.assertEquals(len(result), 6)
         self.assertEqual(result["bool"], True)
 
 

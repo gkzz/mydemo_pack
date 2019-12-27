@@ -35,11 +35,11 @@ class TestRebuildAppAction(BaseActionTestCase):
         result = action.run(**input)
         #print('result: {r}'.format(r=result))
 
-        self.assertEquals(len(reuslt), 4)
+        self.assertEquals(len(result), 4)
         self.assertEqual(result["bool"], True)
     
     @patch(method_execute)
-    def test01_mock_st2_rebuild(_self, executer):
+    def test01_mock_st2_rebuild(self, executer):
         input = yaml.load(
             self.get_fixture_content(input_file), Loader=yaml.FullLoader
         )
@@ -94,7 +94,7 @@ class TestRebuildAppAction(BaseActionTestCase):
 
 
     @patch(method_execute)
-    def test01_mock_st2_rebuild(_self, executer):
+    def test01_mock_st2_rebuild(self, executer):
         input = yaml.load(
             self.get_fixture_content(input_file), Loader=yaml.FullLoader
         )
