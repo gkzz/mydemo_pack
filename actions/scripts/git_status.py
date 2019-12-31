@@ -110,8 +110,9 @@ class GitStatusAction(Action):
                     self.result = self.write_result(command, branch, expected, bool, stdout, stderr)
         except:
             stderr = traceback.format_exc()
-
-        finally:
             self.result = self.write_result(command, branch, expected, bool, stdout, stderr)
+
+        #finally:
+        #    self.result = self.write_result(command, branch, expected, bool, stdout, stderr)
         
         return self.result
