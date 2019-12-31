@@ -131,7 +131,7 @@ class TestGitStatusAction(BaseActionTestCase):
         )
 
         def _execute_command(_cmd):
-            raise Error("_execute_command")
+            raise Exception("_execute_command")
 
         execute.side_effect = _execute_command
 
@@ -166,7 +166,7 @@ class TestGitStatusAction(BaseActionTestCase):
         })
 
         def _execute_command(_cmd):
-            raise Error("_execute_command")
+            raise Exception("_execute_command")
 
         execute.side_effect = _execute_command
 
