@@ -9,7 +9,11 @@
       - ""
   "not_up_to_date":
     "stdout":
-      - "hoge"
+      - 'On branch devel-views'
+      - "Your branch is behind 'origin/devel-views' by 1 commit, and can be fast-forwarded."
+      - '  (use "git pull" to update your local branch)'
+      - ''
+      - 'nothing to commit, working directory clean'
     "stderr":
       - ""
 "failed":
