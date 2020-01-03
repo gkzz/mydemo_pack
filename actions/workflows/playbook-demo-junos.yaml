@@ -25,16 +25,24 @@ tasks:
       inventory_file: <% ctx().inventory_file %>
     next:
       - when: <% succeeded() %>
-        do: post_msg
+        do: echo
         publish:
-          - msg: <% result() %>
+          - pb: <% result() %>
       - when: <% failed() %>
-        do: post_msg
+        do: echo
         publish:
           - failed: True
+          - pb: <% result() %>
+  
+  echo:
+    action: core.local
+    input:
+      cmd: echo <% ctx().pb %> 
+    next:
+      - do: post_msg
+        publish:
           - msg: <% result() %>
-
-
+  
   post_msg:
     action: slack.post_message
     input:
