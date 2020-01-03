@@ -1,0 +1,50 @@
+
+description: playbook-demo-junos
+
+input:
+  - playbook
+  - inventory_file
+
+output:
+  - failed: <% ctx().failed %>
+  - action_name: <% ctx().action_name %>
+
+tasks:
+  init:
+    action: core.noop
+    next:
+    - publish:
+        - failed: False
+        - action_name: 'playbook-demo-junos'
+      do: playbook
+
+  playbook:
+    action: ansible.playbook
+    input:
+      playbook: <% ctx().playbook %>
+      inventory_file: <% ctx().inventory_file %>
+    next:
+      - when: <% succeeded() %>
+        do: post_msg
+        publish:
+          - msg: <% result() %>
+      - when: <% failed() %>
+        do: post_msg
+        publish:
+          - failed: True
+          - msg: <% result() %>
+
+
+  post_msg:
+    action: slack.post_message
+    input:
+      message: <% ctx().msg %>
+    next:
+      - do: last
+  
+  last:
+    action: core.noop
+    next:
+      - when: <% ctx().failed %>
+        do: fail
+

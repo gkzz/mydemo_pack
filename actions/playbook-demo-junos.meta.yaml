@@ -1,0 +1,16 @@
+---
+name: "playbook-demo-junos"
+pack: "mydemo_pack"
+description: "Playbook Demo of junos"
+runner_type: "orquesta"
+entry_point: "workflows/playbook-demo-junos.yaml"
+enabled: true
+parameters:
+  playbook:
+    type: "string"
+    required: true
+    default: "/opt/stackstorm/packs/ansible/playbook/gather_facts_junos.yaml"
+  inventory_file:
+    type: "string"
+    required: true
+    default: "/opt/stackstorm/packs/ansible/inventory/hosts"
