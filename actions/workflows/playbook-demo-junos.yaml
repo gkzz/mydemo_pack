@@ -33,7 +33,7 @@ tasks:
               [stdout] <% result().stdout %>
               [stderr] <% result().stderr %>
       - when: <% failed() %>
-        do: check_failed
+        do: post_msg
         publish:
           - failed: True
           - action_result: |-  
