@@ -28,26 +28,26 @@ tasks:
       - when: <% succeeded() %>
         do: echo
         publish:
-          - pb: <% result() %>
+          - action_result: |-  
+              [succeeded] <% result().succeeded %>
+              [return_code] <% result().return_code %>
+              [stdout] <% result().stdout %>
+              [stderr] <% result().stderr %>
       - when: <% failed() %>
         do: echo
         publish:
           - failed: True
-          - pb: <% result() %>
+          - action_result: |-  
+              [succeeded] <% result().succeeded %>
+              [return_code] <% result().return_code %>
+              [stdout] <% result().stdout %>
+              [stderr] <% result().stderr %>
   
-  echo:
-    action: core.local
-    input:
-      cmd: echo <% ctx().pb %> 
-    next:
-      - do: post_msg
-        publish:
-          - msg: <% result() %>
   
   post_msg:
     action: slack.post_message
     input:
-      message: <% ctx().msg %>
+      message: <% ctx().action_result %>
     next:
       - do: last
   

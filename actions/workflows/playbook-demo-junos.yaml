@@ -28,15 +28,19 @@ tasks:
         do: post_msg
         publish:
           - action_result: |-
-              [result]
-              <% result() %>
+              [succeeded] <% result().succeeded %>
+              [return_code] <% result().return_code %>
+              [stdout] <% result().stdout %>
+              [stderr] <% result().stderr %>
       - when: <% failed() %>
-        do: post_msg
+        do: check_failed
         publish:
           - failed: True
-          - action_result: |-
-              [result]
-              <% result() %>
+          - action_result: |-  
+              [succeeded] <% result().succeeded %>
+              [return_code] <% result().return_code %>
+              [stdout] <% result().stdout %>
+              [stderr] <% result().stderr %>
   
   post_msg:
     action: slack.post_message
