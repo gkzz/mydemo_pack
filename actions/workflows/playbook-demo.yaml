@@ -6,7 +6,19 @@ input:
   - playbook
   - inventory_file
 
+output:
+  - failed: <% ctx().failed %>
+  - action_name: <% ctx().action_name %>
+
 tasks:
+  init:
+    action: core.noop
+    next:
+    - publish:
+        - failed: False
+        - action_name: 'playbook-demo-junos'
+      do: playbook
+
   playbook:
     action: ansible.playbook
     input:
@@ -15,40 +27,33 @@ tasks:
     next:
       - when: <% succeeded() %>
         do: echo
-        publish: 
-          - msg: <% result() %>
+        publish:
+          - pb: <% result() %>
       - when: <% failed() %>
-        publish: 
-          - msg: <% result() %>
-
+        do: echo
+        publish:
+          - failed: True
+          - pb: <% result() %>
+  
   echo:
     action: core.local
     input:
-      cmd: echo <% ctx().msg %> 
+      cmd: echo <% ctx().pb %> 
     next:
-      - when: <% succeeded() %>
-        do: last
+      - do: post_msg
         publish:
           - msg: <% result() %>
-      - when: <% failed() %>
-        do: fail
-        publish: 
-          - msg: <% result() %>
-
-  last:
+  
+  post_msg:
     action: slack.post_message
     input:
       message: <% ctx().msg %>
     next:
-      - when: <% succeeded() %>
-        publish:
-          - msg: <% result() %>
-      - when: <% failed() %>
-        do: 
-          - last
-          - fail
-        publish:
-          - msg: <% result() %>
+      - do: last
+  
+  last:
+    action: core.noop
+    next:
+      - when: <% ctx().failed %>
+        do: fail
 
-output:
-  - msg: <% ctx().msg %>
